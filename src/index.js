@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /************  QUIZ DATA  ************/
-  
+
   // Array with the quiz questions
   const questions = [
     new Question("What is 2 + 2?", ["3", "4", "5", "6"], "4", 1),
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /************  QUIZ INSTANCE  ************/
-  
+
   // Create a new Quiz instance object
   const quiz = new Quiz(questions, quizDuration, quizDuration);
   // Shuffle the quiz questions
@@ -50,16 +50,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const seconds = (quiz.timeRemaining % 60).toString().padStart(2, "0");
 
   // Display the time remaining in the time remaining container
-  const timeRemainingContainer = document.getElementById("timeRemaining");
+  const timeRemainingContainer = document.querySelector("#timeRemaining span");
   timeRemainingContainer.innerText = `${minutes}:${seconds}`;
+
+
+
+
+
 
   // Show first question
   showQuestion();
 
-
   /************  TIMER  ************/
 
-  let timer;
+
+
+
+
 
 
   /************  EVENT LISTENERS  ************/
@@ -69,15 +76,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   /************  FUNCTIONS  ************/
+  startQuizTimer(quiz);
 
-  // showQuestion() - Displays the current question and its choices
-  // nextButtonHandler() - Handles the click on the next button
-  // showResults() - Displays the end view and the quiz results
-
-    
+  showQuestion()
+  nextButtonHandler()
+  showResults()
+  restartQuiz()
 
     // YOUR CODE HERE:
-   
+
     // 1. Show the question
     // Update the inner text of the question container element and show the question text
 function showQuestion() {
@@ -117,21 +124,21 @@ function showQuestion() {
 }
 
 
-  
 
 
-  
+
+
   function nextButtonHandler () {
-    let selectedAnswer = null;  
+    let selectedAnswer = null;
 
     const choices = document.querySelectorAll('input[name="choice"]');
-  
+
     choices.forEach(choice => {
       if (choice.checked) {
         selectedAnswer = choice.value;
       }
     });
-  
+
     if (selectedAnswer) {
       quiz.checkAnswer(selectedAnswer);
       quiz.moveToNextQuestion();
@@ -140,24 +147,30 @@ function showQuestion() {
       alert("Please select an answer before proceeding.");
     }
   }
-  
+
+
+
 
 
 
 
   function showResults() {
 
-    
+
     quizView.style.display = "none";
 
     endView.style.display = "flex";
-    
+
   resultContainer.innerText = `You scored ${quiz.correctAnswers} out of ${quiz.questions.length} correct answers!`;
 }
 
 
 const restartButton = document.querySelector("#restartButton");  // Assuming the button has this ID
 restartButton.addEventListener("click", restartQuiz);
+
+
+
+
 
 function restartQuiz() {
   endView.style.display = "none";
@@ -166,10 +179,47 @@ function restartQuiz() {
 
   quiz.currentQuestionIndex = 0;
   quiz.correctAnswers = 0;
-  quiz.shuffleQuestions();  
+  quiz.shuffleQuestions();
   showQuestion();
 }
 
 
-  
+
+
+
+
+
+let timer;
+
+
+function startQuizTimer(quizInstance) {
+const timerElement = document.querySelector('#timeRemaining span');
+timerElement.textContent = formatTime(quizInstance.timeRemaining);
+
+timer = setInterval(function () {
+  quizInstance.timeRemaining--;
+  timerElement.textContent = formatTime(quizInstance.timeRemaining);
+
+  if (quizInstance.timeRemaining <= 0) {
+    clearInterval(timer);
+    endQuiz(quizInstance);
+  }
+}, 1000);
+}
+
+
+function formatTime(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
+function endQuiz(quizInstance) {
+  alert("Time's up! Ending the quiz.");
+  showResults();
+}
+
+
+
+
+
 });
